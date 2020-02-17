@@ -1,17 +1,42 @@
 # Import main functionality from main
 import main
 
-# Make an intial grid by choosing one of the three grids in main.py
-grid = main.Grid(main.initial_grid2)
+board1 = [
+        ['_','_','_','_','_','_', 'q', 'k'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','P', '_', 'p'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', 'Q', 'P'],
+        ['_','_','_','_','_','P', 'P', '_'],
+        ['_','_','_','_','R','_', 'K', '_']]
 
-# Run A_Star on the grid
-solution = main.A_star(grid)
+board2 = [
+        ['_','_','B','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','K','_','_', '_', '_'],
+        ['_','p','_','_','_','_', '_', '_'],
+        ['_','_','k','_','_','_', '_', '_'],
+        ['P','_','_','_','_','P', '_', '_'],
+        ['_','B','_','_','_','_', '_', '_'],
+        ['N','_','_','_','_','N', '_', '_']]
 
-# Print the solution and the path cost
-for state in solution[1]:
-    for row in state:
-        print(row)
+board3 = [
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','K','_','_', '_', '_'],
+        ['_','_','R','_','P','_', '_', '_'],
+        ['_','P','_','k','r','_', '_', '_'],
+        ['_','_','_','N','p','b', '_', '_'],
+        ['_','_','_','_','P','_', '_', '_'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','N', '_', '_']]
 
-    print("\n")
+# Make an intial board by choosing one of the three board in main.py
+board = main.Board(board1)
 
-print("Path Cost", solution[0])
+board.print()
+
+for piece in board.getPieces():
+    piece.print()
+
+print(main.pieceActions('q', ('d', '4')))
