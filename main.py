@@ -6,6 +6,7 @@ import copy
 
 
 DIMENSION = 8
+MAX_DEPTH = 4
 
 class Board:
     # Object defining a chess board and use it's properties
@@ -16,6 +17,8 @@ class Board:
         self.myBoard = []
         self.prevBoard = prevBoard
         self.turn = turn
+        self.value = None
+        self.move = None
 
         # Added pieces to list 
         self.pieces = []
@@ -38,8 +41,13 @@ class Board:
     def getPieces(self):
         return self.pieces
 
-    def getNextBoards(self):
+    def getValue():
+        return self.value
 
+    def setValue(val):
+        self.value = val
+
+    def getNextBoards(self):
         boards = []
         for piece in self.pieces:
             if piece.getPiece().isupper() and self.turn == "white" or \
@@ -56,7 +64,6 @@ class Board:
                         board = self.board
                         #newBoard[x][y] = 
                         newBoard = Board(board)
-
 
                         if not newBoard.isCheck(self.turn):
                             boards.append(newBoard)
@@ -185,10 +192,47 @@ class Piece:
         return squares
 
 
-def Minimax(board):
+def H_Minimax(board):
     # Set up Minimax
+    v = max_value(board, float("-inf"), float("inf"), 0)
+
+    best_action = None
+    for b in board.getNextBoards():
+        if b.getValue() == v:
+            best_action = b.getAction()
+
+    return best_action
+
+def max_value(board, alpha, beta, depth):
+    if depth == MAX_DEPTH:
+        return Eval(board)
+
+    v = float("-inf")
+    for b in board.getNextBoards():
+        v = max(v, min_value(b, alpha, beta, depth+=1))
+        if v >= beta:
+            return v
+        alpha = max(alpha, v)
+    
+    return v
+
+def min_value(board, alpha, beta, depth):
+    if depth == MAX_DEPTH:
+        return Eval(board)
+
+    v = float("inf")
+    for b in board.getNextBoards():
+        v = min(v, max_value(b, alpha, beta, depth+=1))
+        if v <= alpha:
+            return v
+        beta = min(beta, v)
+    
+    return v
+
+def Eval(board):
     return 0
             
+'''
 # Function to determine how beneficial a subsequent grid is to solving our problem
 def heuristic(subGrid):
     return
@@ -200,4 +244,5 @@ def isValid(coord):
     return 
 
 def solution(node):
-    return 
+    return
+'''
