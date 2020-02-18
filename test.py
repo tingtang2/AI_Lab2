@@ -36,7 +36,9 @@ board = main.Board(board1)
 
 board.print()
 
-for piece in board.getPieces():
-    piece.print()
+board.getNextBoards()
 
-print(main.pieceActions('q', ('d', '4')))
+#for piece in board.getPieces():
+    #piece.print()
+
+#print(main.pieceActions('q', ('d', '4')))
