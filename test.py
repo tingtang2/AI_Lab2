@@ -38,6 +38,8 @@ board.print()
 
 board.getNextBoards()
 
+print("optimal value", board.H_Minimax(board))
+
 #for piece in board.getPieces():
     #piece.print()
 

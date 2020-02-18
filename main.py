@@ -201,7 +201,7 @@ def H_Minimax(board):
         if b.getValue() == v:
             best_action = b.getAction()
 
-    return best_action
+    return v
 
 def max_value(board, alpha, beta, depth):
     if depth == MAX_DEPTH:
