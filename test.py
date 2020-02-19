@@ -33,7 +33,7 @@ board3 = [
 testBoard = [
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','k', 'b', '_'],
-        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', '_', 'B'],
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','_', 'b', 'P'],
@@ -49,7 +49,11 @@ board.getNextBoards()'''
 
 test = main.Board(testBoard)
 
-print(test.isCheck("white"))
+
+for board in test.getNextBoards():
+    board.print()
+
+#print(test.isCheck("white"))
 
 #print("optimal value", board.H_Minimax(board))
 

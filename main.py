@@ -11,14 +11,14 @@ MAX_DEPTH = 4
 class Board:
     # Object defining a chess board and use it's properties
 
-    def __init__(self, board, turn="white", prevBoard=None):
+    def __init__(self, board, turn="white", prevBoard=None, move=None):
 
         self.board = board
         self.myBoard = []
         self.prevBoard = prevBoard
         self.turn = turn
         self.value = None
-        self.move = None
+        self.move = move
 
         # Added pieces to list 
         self.pieces = []
@@ -36,6 +36,7 @@ class Board:
     def print(self):
         for row in self.board:
             print(row)
+        print("\n")
 
     def getCoord(self, square):
         return (8 - int(square[1]), ord(square[0]) - 97)
@@ -58,26 +59,39 @@ class Board:
             if piece.getPiece().isupper() and self.turn == "white" or \
             piece.getPiece().islower() and self.turn == "black":
 
-                print(piece.getPiece())
+                #print(piece.getPiece())
 
                 for square in piece.getMoveSquares(self):
-                    print(square)
-                    coords = self.getCoord()
+                    #print(square)
+                    canMove = False
+                    move = None
+                    coords = self.getCoord(square)
 
-                    if self.myBoard[x][y] is None:
-                        newBoard = copy.deepcopy(self.board)
-                        newBoard[coords[0]][coords[1]] = piece.getPiece()
-                        nextBoard = Board(newBoard)
-
-                        if not newBoard.isCheck(self.turn):
-                            boards.append(newBoard)
+                    if self.myBoard[coords[0]][coords[1]] is None:
+                        canMove = True
                         print ("canMove")
-                    if self.myBoard[coords[0]][coords[1]] is not None:
+                    else:
                         if self.myBoard[coords[0]][coords[1]].getPiece().islower() and self.turn == "white" or \
                                 self.myBoard[coords[0]][coords[1]].getPiece().isupper() and self.turn == "black":
+                            canMove = True
                             print ("canMove")
 
-        return boards # is zero in checkmate situation
+                    if canMove:
+                        newBoard = copy.deepcopy(self.board)
+                        newBoard[coords[0]][coords[1]] = piece.getPiece()
+                        oldCoords = self.getCoord(piece.getSquare())
+                        newBoard[oldCoords[0]][oldCoords[1]] = '_'
+                        newMove = piece.getPiece() + " to " + square[0] + square[1]
+                        
+                        if self.turn == "white":
+                            nextBoard = Board(newBoard, turn = "black", move = newMove)
+                        else:
+                            nextBoard = Board(newBoard, turn = "white", move = newMove)
+
+                        if not nextBoard.isCheck(self.turn):
+                            boards.append(nextBoard)
+
+        return boards # is empty in checkmate situation
 
     def isCheck(self, turn):
         for piece in self.pieces:
@@ -377,7 +391,7 @@ class Piece:
                 if self.getColor() == board.getPieceOnSquare(square).getColor():
                     squares.remove(square)
 
-        print(self.getPiece(), squares)
+        #print(self.getPiece(), squares)
         return squares
 
 
