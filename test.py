@@ -30,15 +30,28 @@ board3 = [
         ['_','_','_','_','P','_', '_', '_'],
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','N', '_', '_']]
+testBoard = [
+        ['_','_','_','_','_','_', 'q', 'k'],
+        ['_','_','_','_','_','_', 'P', '_'],
+        ['_','_','_','_','_','P', '_', 'p'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', 'P', 'P'],
+        ['_','_','_','_','_','P', 'P', '_'],
+        ['_','_','_','_','R','_', 'K', '_']]
 
 # Make an intial board by choosing one of the three board in main.py
-board = main.Board(board1)
+'''board = main.Board(board1)
 
 board.print()
 
-board.getNextBoards()
+board.getNextBoards()'''
 
-print("optimal value", board.H_Minimax(board))
+test = main.Board(testBoard)
+
+print(test.isCheck("white"))
+
+#print("optimal value", board.H_Minimax(board))
 
 #for piece in board.getPieces():
     #piece.print()

@@ -61,22 +61,39 @@ class Board:
                     y = ord(square[0]) - 97
 
                     if self.myBoard[x][y] is None:
-                        board = self.board
-                        #newBoard[x][y] = 
-                        newBoard = Board(board)
+                        newBoard = copy.deepcopy(self.board)
+                        newBoard[x][y] = piece.getPiece()
+                        nextBoard = Board(newBoard)
 
                         if not newBoard.isCheck(self.turn):
                             boards.append(newBoard)
                         print ("canMove")
                     if self.myBoard[x][y] is not None:
-                        if self.myBoard[x][y].getPiece().isupper() and self.turn == "white" or \
-                                self.myBoard[x][y].getPiece().islower() and self.turn == "black":
+                        if self.myBoard[x][y].getPiece().islower() and self.turn == "white" or \
+                                self.myBoard[x][y].getPiece().isupper() and self.turn == "black":
                             print ("canMove")
 
-        return boards
+        return boards # is zero in checkmate situation
 
     def isCheck(self, turn):
-        return True
+        for piece in self.pieces:
+            if turn == "white": 
+                if piece.getPiece().islower() :
+                    for square in piece.getMoveSquares():
+                        x = 8 - int(square[1])
+                        y = ord(square[0]) - 97
+                    
+                        if self.board[x][y] == "K":
+                            return True
+            else:
+                if piece.getPiece().isupper() :
+                    for square in piece.getMoveSquares():
+                        x = 8 - int(square[1])
+                        y = ord(square[0]) - 97
+                    
+                        if self.board[x][y] == "k":
+                            return True
+        return False
 
     def __eq__(self, board):
         for i in range(DIMENSION):
@@ -114,13 +131,13 @@ class Piece:
 
         elif self.piece == 'N' or self.piece == 'n':
             for i in [-1, 1]:
-                if 0 <= ord(self.square[0] + i - 97) < DIMENSION:
+                if 0 <= ord(self.square[0]) + i - 97 < DIMENSION:
                     for j in [-2, 2]:
                         if 1 <= int(self.square[1]) + j <= DIMENSION:
                             squares.append(( chr(ord(self.square[0]) + i), str(int(self.square[1]) + j)))
                     
             for i in [-2, 2]:
-                if 0 <= ord(self.square[0] + i - 97) < DIMENSION:
+                if 0 <= ord(self.square[0]) + i - 97 < DIMENSION:
                     for j in [-1, 1]:
                         if 1 <= int(self.square[1]) + j <= DIMENSION:
                              squares.append(( chr(ord(self.square[0]) + i),str(int(self.square[1]) + j)))
@@ -138,17 +155,20 @@ class Piece:
             for i in range(ord(self.square[0]) - 98, -1, -1):
                 for j in [-1, 1]:
                     if 1 <= int(self.square[1]) + j*count <= DIMENSION:
-                        squares.append((chr(i + 97), str(int(square[1]) + j*count)))
+                        squares.append((chr(i + 97), str(int(self.square[1]) + j*count)))
                 count = count + 1
 
         elif self.piece == 'R' or self.piece == 'r':
              for i in range(DIMENSION):
                  if i + 1 != int(self.square[1]):
                     squares.append((self.square[0], str(i + 1)))
+                    #print(squares[len(squares) - 1])
 
              for i in range(DIMENSION):
                  if i != ord(self.square[0]) - 97:
                     squares.append((chr(i + 97), self.square[1]))
+                    #print(squares[len(squares) - 1])
+
 
         elif self.piece == 'Q' or self.piece == 'q':
 
@@ -209,7 +229,8 @@ def max_value(board, alpha, beta, depth):
 
     v = float("-inf")
     for b in board.getNextBoards():
-        v = max(v, min_value(b, alpha, beta, depth+=1))
+        newDepth = depth + 1
+        v = max(v, min_value(b, alpha, beta, newDepth))
         if v >= beta:
             return v
         alpha = max(alpha, v)
@@ -222,7 +243,8 @@ def min_value(board, alpha, beta, depth):
 
     v = float("inf")
     for b in board.getNextBoards():
-        v = min(v, max_value(b, alpha, beta, depth+=1))
+        newDepth = depth + 1
+        v = min(v, max_value(b, alpha, beta, newDepth))
         if v <= alpha:
             return v
         beta = min(beta, v)
