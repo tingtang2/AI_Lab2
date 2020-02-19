@@ -33,10 +33,15 @@ class Board:
                 else:
                     self.myBoard[i].append(None)
 
-
     def print(self):
         for row in self.board:
             print(row)
+
+    def getCoord(self, square):
+        return (8 - int(square[1]), ord(square[0]) - 97)
+
+    def getPieceOnSquare(self, square):
+        return self.myBoard[self.getCoord(square)[0]][self.getCoord(square)[1]]
 
     def getPieces(self):
         return self.pieces
@@ -55,44 +60,35 @@ class Board:
 
                 print(piece.getPiece())
 
-                for square in piece.getMoveSquares():
+                for square in piece.getMoveSquares(self):
                     print(square)
-                    x = 8 - int(square[1])
-                    y = ord(square[0]) - 97
+                    coords = self.getCoord()
 
                     if self.myBoard[x][y] is None:
                         newBoard = copy.deepcopy(self.board)
-                        newBoard[x][y] = piece.getPiece()
+                        newBoard[coords[0]][coords[1]] = piece.getPiece()
                         nextBoard = Board(newBoard)
 
                         if not newBoard.isCheck(self.turn):
                             boards.append(newBoard)
                         print ("canMove")
-                    if self.myBoard[x][y] is not None:
-                        if self.myBoard[x][y].getPiece().islower() and self.turn == "white" or \
-                                self.myBoard[x][y].getPiece().isupper() and self.turn == "black":
+                    if self.myBoard[coords[0]][coords[1]] is not None:
+                        if self.myBoard[coords[0]][coords[1]].getPiece().islower() and self.turn == "white" or \
+                                self.myBoard[coords[0]][coords[1]].getPiece().isupper() and self.turn == "black":
                             print ("canMove")
 
         return boards # is zero in checkmate situation
 
     def isCheck(self, turn):
         for piece in self.pieces:
-            if turn == "white": 
-                if piece.getPiece().islower() :
-                    for square in piece.getMoveSquares():
-                        x = 8 - int(square[1])
-                        y = ord(square[0]) - 97
-                    
-                        if self.board[x][y] == "K":
-                            return True
-            else:
-                if piece.getPiece().isupper() :
-                    for square in piece.getMoveSquares():
-                        x = 8 - int(square[1])
-                        y = ord(square[0]) - 97
-                    
-                        if self.board[x][y] == "k":
-                            return True
+            for square in piece.getMoveSquares(self):
+                coords = self.getCoord(square)
+                if turn == "white" != piece.getColor():
+                    if self.board[coords[0]][coords[1]] == 'K':
+                        return True
+                elif turn == "black" != piece.getColor():
+                    if self.board[coords[0]][coords[1]] == 'k':
+                        return True
         return False
 
     def __eq__(self, board):
@@ -109,6 +105,12 @@ class Piece:
         self.piece = piece 
         self.square = square
 
+    def getColor(self):
+        if self.piece.isupper():
+            return "white"
+        else:
+            return "black"
+            
     def getPiece(self):
         return self.piece
 
@@ -118,8 +120,9 @@ class Piece:
     def print(self):
         print(self.piece, self.square)
 
-    def getMoveSquares(self):
+    def getMoveSquares(self, board):
         squares = []
+
 
         if self.piece == 'P':
             if int(self.square[1]) + 1 < DIMENSION:
@@ -144,58 +147,218 @@ class Piece:
 
         elif self.piece == 'B' or self.piece == 'b':
 
-            count = 1
-            for i in range(ord(self.square[0]) - 96, DIMENSION):
-                for j in [-1, 1]:
-                    if 1 <= int(self.square[1]) + j*count <= DIMENSION:
-                        squares.append((chr(i + 97), str(int(self.square[1]) + j*count)))
+            coord = board.getCoord(self.square)
+
+            count = coord[0] - 1
+            for i in range(coord[1] - 1, -1, -1):
+                square = (chr(i + 97), str(8 - count))
+                if count < 0:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    toBreak = True
+                    break
+                else:
+                    squares.append(square)
+                    toBreak = True
+                    break
+                count = count - 1
+
+            count = coord[0] + 1
+            for i in range(coord[1] - 1, -1, -1):
+                square = (chr(i + 97), str(8 - count))
+                if count >= DIMENSION:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
                 count = count + 1
 
-            count = 1
-            for i in range(ord(self.square[0]) - 98, -1, -1):
-                for j in [-1, 1]:
-                    if 1 <= int(self.square[1]) + j*count <= DIMENSION:
-                        squares.append((chr(i + 97), str(int(self.square[1]) + j*count)))
-                count = count + 1
+            count = coord[0] - 1
+            for i in range(coord[1] + 1, DIMENSION):
+                square = (chr(i + 97), str(8 - count))
+                if count < 0:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    toBreak = True
+                    break
+                else:
+                    squares.append(square)
+                    toBreak = True
+                    break
+                count = count - 1
 
+            count = coord[0] + 1
+            for i in range(coord[1] + 1, DIMENSION):
+                square = (chr(i + 97), str(8 - count))
+                if count >= DIMENSION:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
+                count = count + 1
         elif self.piece == 'R' or self.piece == 'r':
-             for i in range(DIMENSION):
-                 if i + 1 != int(self.square[1]):
-                    squares.append((self.square[0], str(i + 1)))
-                    #print(squares[len(squares) - 1])
+             coord = board.getCoord(self.square)
 
-             for i in range(DIMENSION):
-                 if i != ord(self.square[0]) - 97:
-                    squares.append((chr(i + 97), self.square[1]))
-                    #print(squares[len(squares) - 1])
+             for i in range(coord[1] - 1 , -1, -1):
+                 square = (chr(i + 97), self.square[1])
+                 if board.getPieceOnSquare(square) == None:
+                     squares.append(square)
+                 elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                 else:
+                     squares.append(square)
+                     break
 
+             for i in range(coord[1] + 1, DIMENSION):
+                 square = (chr(i + 97), self.square[1])
+                 if board.getPieceOnSquare(square) == None:
+                     squares.append(square)
+                 elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                 else:
+                     squares.append(square)
+                     break
+
+             for i in range(coord[0] + 1, DIMENSION):
+                square = (self.square[0], str(8 - i))
+                if board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
+
+             for i in range(coord[0] - 1, -1, -1):
+                square = (self.square[0], str(8 - i))
+                if board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
+                        
 
         elif self.piece == 'Q' or self.piece == 'q':
 
             # Bishop moves
-            count = 1
-            for i in range(ord(self.square[0]) - 96, DIMENSION):
-                for j in [-1, 1]:
-                    if 1 <= int(self.square[1]) + j*count <= DIMENSION:
-                        squares.append((chr(i + 97), str(int(self.square[1]) + j*count)))
+            coord = board.getCoord(self.square)
+
+            count = coord[0] - 1
+            for i in range(coord[1] - 1, -1, -1):
+                square = (chr(i + 97), str(8 - count))
+                if count < 0:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    toBreak = True
+                    break
+                else:
+                    squares.append(square)
+                    toBreak = True
+                    break
+                count = count - 1
+
+            count = coord[0] + 1
+            for i in range(coord[1] - 1, -1, -1):
+                square = (chr(i + 97), str(8 - count))
+                if count > DIMENSION:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
                 count = count + 1
 
-            count = 1
+            count = coord[0] - 1
+            for i in range(coord[1] + 1, DIMENSION):
+                square = (chr(i + 97), str(8 - count))
+                if count < 0:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    toBreak = True
+                    break
+                else:
+                    squares.append(square)
+                    toBreak = True
+                    break
+                count = count - 1
 
-            for i in range(ord(self.square[0]) - 98, -1, -1):
-                for j in [-1, 1]:
-                    if 1 <= int(self.square[1]) + j*count <= DIMENSION:
-                        squares.append((chr(i + 97), str(int(self.square[1]) + j*count)))
+            count = coord[0] + 1
+            for i in range(coord[1] + 1, DIMENSION):
+                square = (chr(i + 97), str(8 - count))
+                if count > DIMENSION:
+                    break
+                elif board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
                 count = count + 1
 
             # Rook moves
-            for i in range(DIMENSION):
-                 if i + 1 != int(self.square[1]):
-                    squares.append((self.square[0], str(i + 1)))
+            coord = board.getCoord(self.square)
 
-            for i in range(DIMENSION):
-                if i != ord(self.square[0]) - 97:
-                    squares.append((chr(i + 97), self.square[1]))
+            for i in range(coord[1] - 1 , -1, -1):
+             square = (chr(i + 97), self.square[1])
+             if board.getPieceOnSquare(square) == None:
+                 squares.append(square)
+             elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                break
+             else:
+                 squares.append(square)
+                 break
+
+            for i in range(coord[1] + 1, DIMENSION):
+               square = (chr(i + 97), self.square[1])
+               if board.getPieceOnSquare(square) == None:
+                   squares.append(square)
+               elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                   break
+               else:
+                   squares.append(square)
+                   break
+
+            for i in range(coord[0] + 1, DIMENSION):
+                square = (self.square[0], str(8 - i))
+                if board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
+
+            for i in range(coord[0] - 1, -1, -1):
+                square = (self.square[0], str(8 - i))
+                if board.getPieceOnSquare(square) == None:
+                    squares.append(square)
+                elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                    break
+                else:
+                    squares.append(square)
+                    break
 
         # king
         else:
@@ -209,6 +372,12 @@ class Piece:
                     if 0 <= ord(self.square[0]) - 97 + i < DIMENSION and 1 <= int(self.square[1]) + j <= DIMENSION:
                         squares.append((chr(ord(self.square[0]) + i), str(int(self.square[1]) + j)))
 
+        for square in squares:
+            if board.getPieceOnSquare(square) is not None:
+                if self.getColor() == board.getPieceOnSquare(square).getColor():
+                    squares.remove(square)
+
+        print(self.getPiece(), squares)
         return squares
 
 
@@ -253,18 +422,3 @@ def min_value(board, alpha, beta, depth):
 
 def Eval(board):
     return 0
-            
-'''
-# Function to determine how beneficial a subsequent grid is to solving our problem
-def heuristic(subGrid):
-    return
-
-def goal_test(state):
-    return 
-
-def isValid(coord):
-    return 
-
-def solution(node):
-    return
-'''

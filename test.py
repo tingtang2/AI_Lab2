@@ -31,12 +31,12 @@ board3 = [
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','N', '_', '_']]
 testBoard = [
-        ['_','_','_','_','_','_', 'q', 'k'],
-        ['_','_','_','_','_','_', 'P', '_'],
-        ['_','_','_','_','_','P', '_', 'p'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','k', 'b', '_'],
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','_', '_', '_'],
-        ['_','_','_','_','_','_', 'P', 'P'],
+        ['_','_','_','_','_','_', '_', '_'],
+        ['_','_','_','_','_','_', 'b', 'P'],
         ['_','_','_','_','_','P', 'P', '_'],
         ['_','_','_','_','R','_', 'K', '_']]
 
@@ -57,3 +57,58 @@ print(test.isCheck("white"))
     #piece.print()
 
 #print(main.pieceActions('q', ('d', '4')))
+'''
+            toBreak = False
+            for i in range(coord[1] - 1, -1, -1):
+                for j in range(coord[0] + 1, DIMENSION):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+            print("2")
+            squares.append("done2")
+            toBreak = False
+            for i in range(coord[1] + 1, DIMENSION):
+                for j in range(coord[0] - 1, -1, -1):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+
+
+            print("3")
+            squares.append("done3")
+            toBreak = False
+            for i in range(coord[1] + 1, DIMENSION):
+                for j in range(coord[0] + 1, DIMENSION):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+            print("4")
+            squares.append("done4")
+            '''
