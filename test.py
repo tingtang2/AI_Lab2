@@ -55,7 +55,7 @@ test = main.Board(testBoard)
 
 #print(test.isCheck("white"))
 
-print("optimal value", main.H_Minimax(board)[0])
+print("optimal value", main.H_Minimax(board)[0], main.H_Minimax(board)[1])
 
 #for piece in board.getPieces():
     #piece.print()

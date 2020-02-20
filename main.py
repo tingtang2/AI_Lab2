@@ -50,11 +50,15 @@ class Board:
     def getPieces(self):
         return self.pieces
 
-    def getValue():
+    def getValue(self):
         return self.value
 
-    def setValue(val):
+    def setValue(self, val):
+        print("value from Board", val)
         self.value = val
+
+    def getMove(self):
+        return self.move
 
     def getNextBoards(self):
         boards = []
@@ -405,50 +409,72 @@ class Piece:
 
 def H_Minimax(board):
     # Set up Minimax
-    v = max_value(board, float("-inf"), float("inf"), 0)
+    frontier = []
+    v = max_value(board, float("-inf"), float("inf"), 0, frontier)
+    board.setValue(v)
+    print("frontier", len(frontier))
+    frontier = frontier[1:]
+
 
     best_action = None
  
-    for b in board.getNextBoards():
+    for b in frontier:
+        print("value", b.getValue())
+        print("move", b.getMove())
         if b.getValue() == v:
-            best_action = b.getAction()
+            best_action = b.getMove()
+            print(b.getMove())
+            print("hehe")
+            break
 
     return v, best_action
 
-def max_value(board, alpha, beta, depth):
+def max_value(board, alpha, beta, depth, front):
     print(depth)
     if depth == MAX_DEPTH:
-        return Eval(board)
+        val = Eval(board)
+        board.setValue(val)
+        front.insert(0, board)
+        return val
 
     v = float("-inf")
     i = 0
     for b in board.getNextBoards():
-        print(i, len(board.getNextBoards())) 
         newDepth = depth + 1
-        v = max(v, min_value(b, alpha, beta, newDepth))
+        v = max(v, min_value(b, alpha, beta, newDepth, front))
         if v >= beta:
+            board.setValue(v)
+            front.insert(0, board)
             return v
         alpha = max(alpha, v)
         i += 1
     
+    board.setValue(v)
+    front.insert(0, board)
     return v
 
-def min_value(board, alpha, beta, depth):
+def min_value(board, alpha, beta, depth, front):
     print(depth)
     if depth == MAX_DEPTH:
-        return Eval(board)
+        val = Eval(board)
+        board.setValue(val)
+        front.insert(0, board)
+        return val
 
     v = float("inf")
     i = 0
     for b in board.getNextBoards():
-        print(i, len(board.getNextBoards()))
         newDepth = depth + 1
-        v = min(v, max_value(b, alpha, beta, newDepth))
+        v = min(v, max_value(b, alpha, beta, newDepth, front))
         if v <= alpha:
+            board.setValue(v)
+            front.insert(0, board)
             return v
         beta = min(beta, v)
         i += 1
     
+    board.setValue(v)
+    front.insert(0, board)
     return v
 
 def Eval(board):
