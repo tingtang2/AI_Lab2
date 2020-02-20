@@ -41,21 +41,21 @@ testBoard = [
         ['_','_','_','_','R','_', 'K', '_']]
 
 # Make an intial board by choosing one of the three board in main.py
-'''board = main.Board(board1)
+board = main.Board(board1)
 
 board.print()
 
-board.getNextBoards()'''
+#board.getNextBoards()
 
 test = main.Board(testBoard)
 
 
-for board in test.getNextBoards():
-    board.print()
+#for board in test.getNextBoards():
+#    board.print()
 
 #print(test.isCheck("white"))
 
-#print("optimal value", board.H_Minimax(board))
+print("optimal value", main.H_Minimax(board)[0])
 
 #for piece in board.getPieces():
     #piece.print()

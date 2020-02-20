@@ -4,9 +4,12 @@
 
 import copy
 
-
 DIMENSION = 8
 MAX_DEPTH = 4
+
+pieceMap = {"p": -1, "P": 1, "n": -3, "N": 3,
+            "b": -3, "B": 3, "r": -5, "R": 5,
+            "q": -9, "Q": 9, "k": 0, "K": 0}
 
 class Board:
     # Object defining a chess board and use it's properties
@@ -69,12 +72,12 @@ class Board:
 
                     if self.myBoard[coords[0]][coords[1]] is None:
                         canMove = True
-                        print ("canMove")
+                        #print ("canMove")
                     else:
                         if self.myBoard[coords[0]][coords[1]].getPiece().islower() and self.turn == "white" or \
                                 self.myBoard[coords[0]][coords[1]].getPiece().isupper() and self.turn == "black":
                             canMove = True
-                            print ("canMove")
+                           # print ("canMove")
 
                     if canMove:
                         newBoard = copy.deepcopy(self.board)
@@ -95,6 +98,7 @@ class Board:
 
     def isCheck(self, turn):
         for piece in self.pieces:
+            #print(piece.getPiece())
             for square in piece.getMoveSquares(self):
                 coords = self.getCoord(square)
                 if turn == "white" != piece.getColor():
@@ -166,7 +170,7 @@ class Piece:
             count = coord[0] - 1
             for i in range(coord[1] - 1, -1, -1):
                 square = (chr(i + 97), str(8 - count))
-                if count < 0:
+                if count <= 0:
                     break
                 elif board.getPieceOnSquare(square) == None:
                     squares.append(square)
@@ -196,7 +200,7 @@ class Piece:
             count = coord[0] - 1
             for i in range(coord[1] + 1, DIMENSION):
                 square = (chr(i + 97), str(8 - count))
-                if count < 0:
+                if count <= 0:
                     break
                 elif board.getPieceOnSquare(square) == None:
                     squares.append(square)
@@ -274,9 +278,10 @@ class Piece:
             count = coord[0] - 1
             for i in range(coord[1] - 1, -1, -1):
                 square = (chr(i + 97), str(8 - count))
-                if count < 0:
+                #print(square[0], square[1])
+                if count <= 0:
                     break
-                elif board.getPieceOnSquare(square) == None:
+                if board.getPieceOnSquare(square) == None:
                     squares.append(square)
                 elif self.getColor() == board.getPieceOnSquare(square).getColor():
                     toBreak = True
@@ -290,7 +295,8 @@ class Piece:
             count = coord[0] + 1
             for i in range(coord[1] - 1, -1, -1):
                 square = (chr(i + 97), str(8 - count))
-                if count > DIMENSION:
+                #print(square[0], square[1])
+                if count >= DIMENSION:
                     break
                 elif board.getPieceOnSquare(square) == None:
                     squares.append(square)
@@ -304,9 +310,10 @@ class Piece:
             count = coord[0] - 1
             for i in range(coord[1] + 1, DIMENSION):
                 square = (chr(i + 97), str(8 - count))
-                if count < 0:
+                #print(square[0], square[1])
+                if count <= 0:
                     break
-                elif board.getPieceOnSquare(square) == None:
+                if board.getPieceOnSquare(square) == None:
                     squares.append(square)
                 elif self.getColor() == board.getPieceOnSquare(square).getColor():
                     toBreak = True
@@ -320,7 +327,8 @@ class Piece:
             count = coord[0] + 1
             for i in range(coord[1] + 1, DIMENSION):
                 square = (chr(i + 97), str(8 - count))
-                if count > DIMENSION:
+                #print(square[0], square[1])
+                if count >= DIMENSION:
                     break
                 elif board.getPieceOnSquare(square) == None:
                     squares.append(square)
@@ -400,39 +408,53 @@ def H_Minimax(board):
     v = max_value(board, float("-inf"), float("inf"), 0)
 
     best_action = None
+ 
     for b in board.getNextBoards():
         if b.getValue() == v:
             best_action = b.getAction()
 
-    return v
+    return v, best_action
 
 def max_value(board, alpha, beta, depth):
+    print(depth)
     if depth == MAX_DEPTH:
         return Eval(board)
 
     v = float("-inf")
+    i = 0
     for b in board.getNextBoards():
+        print(i, len(board.getNextBoards())) 
         newDepth = depth + 1
         v = max(v, min_value(b, alpha, beta, newDepth))
         if v >= beta:
             return v
         alpha = max(alpha, v)
+        i += 1
     
     return v
 
 def min_value(board, alpha, beta, depth):
+    print(depth)
     if depth == MAX_DEPTH:
         return Eval(board)
 
     v = float("inf")
+    i = 0
     for b in board.getNextBoards():
+        print(i, len(board.getNextBoards()))
         newDepth = depth + 1
         v = min(v, max_value(b, alpha, beta, newDepth))
         if v <= alpha:
             return v
         beta = min(beta, v)
+        i += 1
     
     return v
 
 def Eval(board):
-    return 0
+    value = 0
+
+    for piece in board.getPieces():
+        value += pieceMap[piece.getPiece()] 
+
+    return value
