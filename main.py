@@ -454,9 +454,8 @@ def H_Minimax(board):
     return v, best_action
 
 def max_value(board, alpha, beta, depth, front):
-    print(depth)
     if depth == MAX_DEPTH:
-        val = Eval(board)
+        val = Eval(board, depth)
         board.setValue(val)
         front.insert(0, board)
         return val
@@ -480,7 +479,7 @@ def max_value(board, alpha, beta, depth, front):
 def min_value(board, alpha, beta, depth, front):
     print(depth)
     if depth == MAX_DEPTH:
-        val = Eval(board)
+        val = Eval(board, depth)
         board.setValue(val)
         front.insert(0, board)
         return val
@@ -501,10 +500,20 @@ def min_value(board, alpha, beta, depth, front):
     front.insert(0, board)
     return v
 
-def Eval(board):
+def Eval(board, d):
     value = 0
 
     for piece in board.getPieces():
-        value += pieceMap[piece.getPiece()] 
+        value += pieceMap[piece.getPiece()]
 
-    return value
+    checkmate = 0
+    if len(board.getNextBoards()) == 0:
+        for piece in board.getPieces():
+            checkmate += abs(pieceMap[piece.getPiece()])
+        
+    return value + checkmate - d
+
+def largestPiecePolicy(board):
+    order = []
+
+    return [board.getNextBoards(), key=lambda x: pieceMap[x.getMove()[0]]]

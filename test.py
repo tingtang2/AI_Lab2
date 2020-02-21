@@ -50,6 +50,71 @@ board = main.Board(board1)
 
 test = main.Board(testBoard)
 
-test.getNextBoards()
+
+#for board in test.getNextBoards():
+#    board.print()
+
+#print(test.isCheck("white"))
 
 #print("optimal value", main.H_Minimax(board)[0], main.H_Minimax(board)[1])
+
+#for piece in board.getPieces():
+    #piece.print()
+
+#print(main.pieceActions('q', ('d', '4')))
+'''
+            toBreak = False
+            for i in range(coord[1] - 1, -1, -1):
+                for j in range(coord[0] + 1, DIMENSION):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+            print("2")
+            squares.append("done2")
+            toBreak = False
+            for i in range(coord[1] + 1, DIMENSION):
+                for j in range(coord[0] - 1, -1, -1):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+
+
+            print("3")
+            squares.append("done3")
+            toBreak = False
+            for i in range(coord[1] + 1, DIMENSION):
+                for j in range(coord[0] + 1, DIMENSION):
+                    square = (chr(i + 97), str(8 - j))
+                    if board.getPieceOnSquare(square) == None:
+                        squares.append(square)
+                    elif self.getColor() == board.getPieceOnSquare(square).getColor():
+                        toBreak = True
+                        break
+                    else:
+                        squares.append(square)
+                        toBreak = True
+                        break
+                if toBreak:
+                    break
+            print("4")
+            squares.append("done4")
+            '''
+>>>>>>> Stashed changes
