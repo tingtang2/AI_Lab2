@@ -145,14 +145,38 @@ class Piece:
     def getMoveSquares(self, board):
         squares = []
 
-
         if self.piece == 'P':
+            coord = board.getCoord(self.getSquare())
             if int(self.square[1]) + 1 < DIMENSION:
-                squares.append((self.square[0], str(int(self.square[1]) + 1)))
+                if board.getPieceOnSquare((self.square[0], str(int(self.square[1]) + 1))) == None:
+                    squares.append((self.square[0], str(int(self.square[1]) + 1)))
+                if coord[1] - 1 > 0:
+                    square = (chr(ord(self.square[0]) - 1), str(int(self.square[1]) + 1))
+                    if board.getPieceOnSquare(square) != None: 
+                        if board.getPieceOnSquare(square).getColor() == "black":
+                            squares.append(square)
+                if coord[1] + 1 < DIMENSION:
+                    square = (chr(ord(self.square[0]) + 1), str(int(self.square[1]) + 1))
+                    if board.getPieceOnSquare(square) != None:
+                        if board.getPieceOnSquare(square).getColor() == "black":
+                            squares.append(square)
 
         elif self.piece == 'p':
-             if int(self.square[1]) - 1 > 0:
-                 squares.append((self.square[0], str(int(self.square[1]) - 1)))
+            coord = board.getCoord(self.getSquare())
+            if int(self.square[1]) - 1 > 0:
+                if board.getPieceOnSquare((self.square[0], str(int(self.square[1]) - 1))) == None:
+                    squares.append((self.square[0], str(int(self.square[1]) - 1)))
+                if coord[1] - 1 > 0:
+                    square = (chr(ord(self.square[0]) - 1), str(int(self.square[1]) - 1))
+                    if board.getPieceOnSquare(square) != None: 
+                        if board.getPieceOnSquare(square).getColor() == "white":
+                            squares.append(square)
+                if coord[1] + 1 < DIMENSION:
+                    square = (chr(ord(self.square[0]) + 1), str(int(self.square[1]) - 1))
+                    if board.getPieceOnSquare(square) != None:
+                        if board.getPieceOnSquare(square).getColor() == "white":
+                            squares.append(square)
+            print(squares)
 
         elif self.piece == 'N' or self.piece == 'n':
             for i in [-1, 1]:
