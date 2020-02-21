@@ -3,9 +3,6 @@
 To run file: 
     python3 test.py
 
-To run on the different grids:
-    On line 45  of test.py, change board1 to board2 or board3 to run the program on the different inital boards provided
-    Each board is hard coded from lines 
 
 Structure of program:
     - A Board object keeps track of Piece insances. Information about a chess board and each piece are stored in
