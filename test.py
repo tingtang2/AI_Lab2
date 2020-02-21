@@ -31,37 +31,15 @@ board3 = [
         ['_','_','_','_','_','_', '_', '_'],
         ['_','_','_','_','_','N', '_', '_']]
 
-testBoard = [
-        ['_','_','_','_','_','_', '_', '_'],
-        ['_','_','_','_','_','k', 'b', '_'],
-        ['_','_','_','_','_','_', '_', 'B'],
-        ['_','_','_','_','_','_', '_', '_'],
-        ['_','_','_','_','_','_', '_', '_'],
-        ['_','_','_','_','b','_', 'b', 'P'],
-        ['_','_','_','p','_','P', 'P', '_'],
-        ['_','_','R','_','R','_', 'K', '_']]
-
 # Make an intial board by choosing one of the three board in main.py
 board = main.Board(board1)
+boardd = main.Board(board2)
+boarddd = main.Board(board3)
 
-#board.print()
-
-#board.getNextBoards()
-
-test = main.Board(testBoard)
-
-for b in main.closestPiecePolicy(test):
-    b.print()
-
-#for board in test.getNextBoards():
-#    board.print()
-
-#print(test.isCheck("white"))
-
-#print("optimal value", main.H_Minimax(board)[0], main.H_Minimax(board)[1])
-
-#for piece in board.getPieces():
-    #piece.print()
-
-#print(main.pieceActions('q', ('d', '4')))
+val, move = main.H_Minimax(board)
+print("optimal value board 1", val, move)
+val, move = main.H_Minimax(boardd)
+print("optimal value board 2", val, move)
+val, move = main.H_Minimax(boarddd)
+print("optimal value board 3", val, move)
 

@@ -6,15 +6,22 @@ import copy
 
 DIMENSION = 8
 MAX_DEPTH = 4
+TURN = "white"
 
+# Rieman values for pieces for use by H-Minimax 
 pieceMap = {"p": -1, "P": 1, "n": -3, "N": 3,
             "b": -3, "B": 3, "r": -5, "R": 5,
             "q": -9, "Q": 9, "k": 0, "K": 0}
+if TURN == "black":
+    pieceMap = {"p": 1, "P":-1, "n": 3, "N": -3,
+                "b": 3, "B": -3, "r": 5, "R": -5,
+                "q": 9, "Q": -9, "k": 0, "K": 0}
 
+
+# Object defining a chess board and use it's properties
 class Board:
-    # Object defining a chess board and use it's properties
 
-    def __init__(self, board, turn="white", prevBoard=None, move=None):
+    def __init__(self, board, turn=TURN, prevBoard=None, move=None):
 
         self.board = board
         self.myBoard = []
@@ -26,6 +33,7 @@ class Board:
         # Added pieces to list 
         self.pieces = []
 
+        # Create Piece instances and add them to myBoard
         for i in range(DIMENSION):
             self.myBoard.append([])
             for j in range(DIMENSION):
@@ -41,6 +49,7 @@ class Board:
             print(row)
         print("\n")
 
+    # Get actual coordinates of the grid as opposed to chess coordinates 
     def getCoord(self, square):
         return (8 - int(square[1]), ord(square[0]) - 97)
 
@@ -54,34 +63,31 @@ class Board:
         return self.value
 
     def setValue(self, val):
-        print("value from Board", val)
         self.value = val
 
     def getMove(self):
         return self.move
+    
+    def getTurn(self):
+        return self.turn
 
+    # Generate next possible boards from given board
     def getNextBoards(self):
         boards = []
         for piece in self.pieces:
-            if piece.getPiece().isupper() and self.turn == "white" or \
-            piece.getPiece().islower() and self.turn == "black":
-
-                #print(piece.getPiece())
+            if piece.getColor() == self.turn:  
 
                 for square in piece.getMoveSquares(self):
-                    #print(square)
                     canMove = False
                     move = None
                     coords = self.getCoord(square)
 
                     if self.myBoard[coords[0]][coords[1]] is None:
                         canMove = True
-                        #print ("canMove")
                     else:
                         if self.myBoard[coords[0]][coords[1]].getPiece().islower() and self.turn == "white" or \
                                 self.myBoard[coords[0]][coords[1]].getPiece().isupper() and self.turn == "black":
                             canMove = True
-                           # print ("canMove")
 
                     if canMove:
                         newBoard = copy.deepcopy(self.board)
@@ -98,11 +104,11 @@ class Board:
                         if not nextBoard.isCheck(self.turn):
                             boards.append(nextBoard)
 
-        return boards # is empty in checkmate situation
+        return boards
 
+    # Returns whether a move has put the the player's king in check
     def isCheck(self, turn):
         for piece in self.pieces:
-            #print(piece.getPiece())
             for square in piece.getMoveSquares(self):
                 coords = self.getCoord(square)
                 if turn == "white" != piece.getColor():
@@ -121,6 +127,7 @@ class Board:
         return True
 
         
+# Piece object to keep track of properties of a piece and generate squares it can move to on a given board
 class Piece:
 
     def __init__(self, piece, square):
@@ -142,6 +149,7 @@ class Piece:
     def print(self):
         print(self.piece, self.square)
 
+    # Generate squares a piece can move to depending on it's nature
     def getMoveSquares(self, board):
         squares = []
 
@@ -176,7 +184,6 @@ class Piece:
                     if board.getPieceOnSquare(square) != None:
                         if board.getPieceOnSquare(square).getColor() == "white":
                             squares.append(square)
-            print(squares)
 
         elif self.piece == 'N' or self.piece == 'n':
             for i in [-1, 1]:
@@ -306,7 +313,6 @@ class Piece:
             count = coord[0] - 1
             for i in range(coord[1] - 1, -1, -1):
                 square = (chr(i + 97), str(8 - count))
-                #print(square[0], square[1])
                 if count <= 0:
                     break
                 if board.getPieceOnSquare(square) == None:
@@ -323,7 +329,6 @@ class Piece:
             count = coord[0] + 1
             for i in range(coord[1] - 1, -1, -1):
                 square = (chr(i + 97), str(8 - count))
-                #print(square[0], square[1])
                 if count >= DIMENSION:
                     break
                 elif board.getPieceOnSquare(square) == None:
@@ -427,10 +432,10 @@ class Piece:
                 if self.getColor() == board.getPieceOnSquare(square).getColor():
                     squares.remove(square)
 
-        #print(self.getPiece(), squares)
         return squares
 
 
+# H-Minimax function to explore further states
 def H_Minimax(board):
     # Set up Minimax
     frontier = []
@@ -442,16 +447,13 @@ def H_Minimax(board):
     best_action = None
  
     for b in frontier:
-        print("value", b.getValue())
-        print("move", b.getMove())
         if b.getValue() == v:
             best_action = b.getMove()
-            print(b.getMove())
-            print("hehe")
             break
 
     return v, best_action
 
+# max_value to determine which branch to explore. Used by H-Minimax
 def max_value(board, alpha, beta, depth, front):
     if depth == MAX_DEPTH:
         val = Eval(board, depth)
@@ -461,8 +463,8 @@ def max_value(board, alpha, beta, depth, front):
 
     v = float("-inf")
     i = 0
-    #for b in board.getNextBoards():
     for b in largestPiecePolicy(board):
+    #for b in closestPiecePolicy(board):
         newDepth = depth + 1
         v = max(v, min_value(b, alpha, beta, newDepth, front))
         if v >= beta:
@@ -476,8 +478,8 @@ def max_value(board, alpha, beta, depth, front):
     front.insert(0, board)
     return v
 
+# min_value to determine which branch to explore. Used by H-Minimax
 def min_value(board, alpha, beta, depth, front):
-    print(depth)
     if depth == MAX_DEPTH:
         val = Eval(board, depth)
         board.setValue(val)
@@ -486,8 +488,8 @@ def min_value(board, alpha, beta, depth, front):
 
     v = float("inf")
     i = 0
-    #for b in board.getNextBoards():
     for b in largestPiecePolicy(board):
+    #for b in closestPiecePolicy(board):
         newDepth = depth + 1
         v = min(v, max_value(b, alpha, beta, newDepth, front))
         if v <= alpha:
@@ -501,6 +503,7 @@ def min_value(board, alpha, beta, depth, front):
     front.insert(0, board)
     return v
 
+# Evaluates score of board
 def Eval(board, d):
     value = 0
 
@@ -511,9 +514,13 @@ def Eval(board, d):
     if len(board.getNextBoards()) == 0:
         for piece in board.getPieces():
             checkmate += abs(pieceMap[piece.getPiece()])
-        
-    return value + checkmate - d
 
+    if board.getTurn() == "black":
+        checkmate = -checkmate
+        
+    return value + checkmate -d
+
+#Exploration policies
 def largestPiecePolicy(board):
     return sorted(board.getNextBoards(), key=lambda x: pieceMap[x.getMove()[0]], reverse=True)
 
