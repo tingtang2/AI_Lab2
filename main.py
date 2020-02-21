@@ -439,7 +439,6 @@ def H_Minimax(board):
     print("frontier", len(frontier))
     frontier = frontier[1:]
 
-
     best_action = None
  
     for b in frontier:
@@ -462,7 +461,8 @@ def max_value(board, alpha, beta, depth, front):
 
     v = float("-inf")
     i = 0
-    for b in board.getNextBoards():
+    #for b in board.getNextBoards():
+    for b in largestPiecePolicy(board):
         newDepth = depth + 1
         v = max(v, min_value(b, alpha, beta, newDepth, front))
         if v >= beta:
@@ -486,7 +486,8 @@ def min_value(board, alpha, beta, depth, front):
 
     v = float("inf")
     i = 0
-    for b in board.getNextBoards():
+    #for b in board.getNextBoards():
+    for b in largestPiecePolicy(board):
         newDepth = depth + 1
         v = min(v, max_value(b, alpha, beta, newDepth, front))
         if v <= alpha:
@@ -514,6 +515,7 @@ def Eval(board, d):
     return value + checkmate - d
 
 def largestPiecePolicy(board):
-    order = []
+    return sorted(board.getNextBoards(), key=lambda x: pieceMap[x.getMove()[0]], reverse=True)
 
-    return [board.getNextBoards(), key=lambda x: pieceMap[x.getMove()[0]]]
+def closestPiecePolicy(board):
+    return sorted(board.getNextBoards(), key=lambda x: x.getMove()[-1], reverse=True)
